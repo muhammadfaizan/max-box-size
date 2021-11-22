@@ -1,20 +1,18 @@
-# Comtravo Flight API
+# Eimy Box Game API
 ## Author
   **Muhammad Faizan** <muhammad.faizan@timify.com>
 
 ## Feature
-  - Merges flights from several API
-  - Response time is always less than a second
-  - Api is served on root address of application
-
+  - Finds the largest rectangle in a given matrix
 ## Structure
     ./ ___________________________________ # App Structure
     |
     |- bin/                     
     |  |- www ___________________________ # To start server locally
     |
-    |- modules/__________________________ # seperation of modules
+    |- controllers/__________________________ # seperation of modules
     |  |- index.js ______________________ # Exports of all modules
+    |  |- box-game.js ______________________ # All game related logic here
     |
     |- routes/ __________________________ # All the routes, you can even mount other express app here for logical separation
     |  |- index.js ______________________ # all the version based routes
@@ -33,6 +31,17 @@
   2. start service:
     
     $ npm run start
-  3. To run tests you
 
-    $ npm run test
+### Sample CURL
+  ```sh
+  curl --location --request POST 'http://localhost:3000' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "box": [
+        [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1],
+        [0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1],
+        [0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1]
+    ]
+}'
+```

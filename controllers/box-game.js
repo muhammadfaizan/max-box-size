@@ -2,8 +2,7 @@ const { start } = require('repl')
 const util = require('util')
 
 class Point {
-  r
-  c
+
   /**
    * 
    * @param {number} x 
@@ -14,6 +13,8 @@ class Point {
     this.r = Math.floor(r)
     this.c = Math.floor(c)
   }
+  r
+  c
   r() {
     return this.r
   }
@@ -52,12 +53,31 @@ class Point {
   nextDiag() {
     return new Point(this.r + 1, this.c + 1 )
   }
+  props() {
+    return {
+      r: this.r, 
+      c: this.c
+    }
+  }
 }
 
 const findBoxSize = ({ startPoint , endPoint }) => {
   return (Math.abs(startPoint.c - endPoint.c) + 1) * (Math.abs(startPoint.r - endPoint.r) + 1)
 }
 
+/**
+ * @description I solved it with recursion, and created my own logic to go depth first approach and find the maxSize a rectangle can offer.
+ * Although I can improve some function like (isBox) with dynamic programming where I store already what i have calculated and calculate from ahead, instead of doing it all over again,
+ * However because I was already late in submission I did not improve that bit.
+ * I could also have done it with bruit force which would take n^2(n) calculation however it would mess it up in performance.
+ * Recursion was the only way I could think of doing it since it was a depth crawling. I hope you like code and apologize for not making a frontend.
+ * @param {Object} param0
+ * @param {Point} param0.endPoint
+ * @param {Point} param0.startPoint
+ * @param {number[][]} param0.matrix
+ * @param {number} param0.maxSize 
+ * @returns 
+ */
 function scanPoint({ startPoint, endPoint, matrix, maxSize = 1}) {
   
   let maxPoint, maxPointSize
@@ -101,23 +121,6 @@ function scanPoint({ startPoint, endPoint, matrix, maxSize = 1}) {
     }
   }
 
-  
-
-  
-  // if (isBox({matrix, startPoint, endPoint: nextRight})) {
-  //   let size = findBoxSize({ startPoint, endPoint: nextRight })
-  //   if (size > maxSize) {
-  //     maxSize = size
-  //   }
-  // }
-  // let nextBottom = iterator.nextBottom()
-  // if (isBox({matrix, startPoint, endPoint: nextBottom})) {
-  //   let size = findBoxSize({ startPoint, endPoint: nextBottom })
-  //   if (size > maxSize) {
-  //     maxSize = size
-  //   }
-  // }
-
   return {
     size: maxPointSize,
     point: maxPoint
@@ -139,29 +142,31 @@ function isBox (matrix, startPoint, endPoint) {
   return true
 }
 const calculateBox = (req, res, next) => {
-  // let box = [
-  //   [0,1,1,0],
-  //   [0,1,1,0],
-  //   [0,0,0,0],
-  // ]
   
   let box = req.body.box
+  let startPoint = null, endPoint = null, maxSize = 0
   for (let i = 0; i < box.length; i++) {
     const row = box[i]
     for (let j = 0; j < row.length; j++) {
       const column = row[j]
-      let startPoint = new Point(i, j)
-      let valueAtPoint = startPoint.valueAtPoint(box)
+      let startPointR = new Point(i, j)
+      let valueAtPoint = startPointR.valueAtPoint(box)
       if (valueAtPoint === 1) {
-        // if ((i > 1 && Point.valueAtPoint({ r: i-1, c: j, matrix: box}) !== 1) || (j > 1 && Point.valueAtPoint({ r: i, c: j-1, matrix: box}) !== 1)) {
-        //   continue
-        // }
-        const { size, point } = scanPoint({ startPoint, matrix: box })
-        return res.send({size, point})
+        const { size, point } = scanPoint({ startPoint: startPointR, matrix: box })
+        if (size > maxSize) {
+          startPoint = startPointR
+          endPoint = point
+          maxSize = size
+        }
       }
     }
   }
-  return res.send("No result")
+
+  return res.send({
+    startPoint: startPoint?.props(),
+    endPoint: endPoint?.props(),
+    size: maxSize,
+  })
 
 }
 module.exports = {
